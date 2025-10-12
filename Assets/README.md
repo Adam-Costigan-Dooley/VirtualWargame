@@ -10,7 +10,7 @@
 - **Output:** `\MobileCA\releases\androidbuild1.apk`
 
 ## Versioning
-- **Package Name:** `com.yourname.MobileCA`
+- **Package Name:** `ie.setu.mgd.MobileCA`
 - **Version Name:** `0.1.0`
 - **Version Code:** `1`
 
@@ -21,8 +21,8 @@
 
 
 ## Verification Method
-- The APK was verified using Unity’s Device Simulator.
-- `CAinformation` contains images and documents showcasing the splash and main menu within the simulated phone frame + records build metadata and verification notes.
+- The APK was verified using Unity’s Device Simulator on a Samsung Galaxy S10 5G and profiler.
+- `CAinformation` contains images and documents showcasing the splash and main menu within the simulated phone frame +  build profile data.
 
 ## Build Steps
 1. Open project in Unity 6.2.
