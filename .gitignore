@@ -1,0 +1,66 @@
+# === UNITY PROJECT IGNORE ===
+
+# Builds
+/releases/*.apk
+/release/*.apk
+/build/
+/Build/
+
+# OS and IDE junk
+.DS_Store
+Thumbs.db
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+
+# Unity generated
+Library/
+Temp/
+Obj/
+Logs/
+UserSettings/
+MemoryCaptures/
+
+# Auto-generated VS / JetBrains
+.vscode/
+.idea/
+
+# Crash and profiler data
+*.stacktrace
+*.log
+*.dmp
+
+# Cache and packages
+Library/
+obj/
+Temp/
+build/
+Builds/
+sysinfo.txt
+/Logs/
+*.apk
+*.aab
+*.keystore
+
+# Local test data
+*.local
+*.tmp
+*.bak
+*.old
+
+# Don't upload keystores or passwords
+android/*.keystore
+*.keystore
+
+# === KEEP THESE ===
+!Assets/
+!Packages/
+!ProjectSettings/
+!UserSettings/
+!docs/
+!releases/
+!README.md
+!*.md
