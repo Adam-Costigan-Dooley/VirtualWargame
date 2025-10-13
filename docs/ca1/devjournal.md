@@ -1,0 +1,13 @@
+# Development Journal (CA1)
+
+## Sunday - Toolchain & First Build
+Installed Unity 6.2 with Android modules; set IL2CPP + ARM64; created release keystore; built signed APK. Documented steps in README.
+
+## Sunday - Device Verification & Profiling
+No physical Android phone available; used Unity Device Simulator (Sansung Galaxy s10 5G) for visual verification; recorded a Profiler capture on Unity Simulator.  
+
+## Monday - Further Device Verification & Profiling
+Splash to menu flow set up, and baseline CPU/Memory/Rendering metrics without hardware.  
+
+## Monday - Publication Awareness
+Wrote store-assets checklist, privacy/data-use statement, and Play-style descriptions.  
