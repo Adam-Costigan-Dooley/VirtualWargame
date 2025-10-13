@@ -51,10 +51,6 @@ sysinfo.txt
 *.bak
 *.old
 
-# Don't upload keystores or passwords
-keys/*.keystore
-*.keystore
-
 # === KEEP THESE ===
 !Assets/
 !Packages/
