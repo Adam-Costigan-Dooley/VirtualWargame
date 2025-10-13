@@ -52,7 +52,7 @@ sysinfo.txt
 *.old
 
 # Don't upload keystores or passwords
-android/*.keystore
+keys/*.keystore
 *.keystore
 
 # === KEEP THESE ===
