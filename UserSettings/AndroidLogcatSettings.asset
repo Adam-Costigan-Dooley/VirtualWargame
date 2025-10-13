@@ -1,13 +1,50 @@
 {
     "m_SelectedDeviceId": "emulator-5554",
     "m_SelectedProcess": {
-        "deviceId": "",
-        "name": "",
-        "processId": 0,
+        "deviceId": "emulator-5554",
+        "name": "ie.setu.mgd.MobileCA",
+        "processId": 2544,
         "exited": false
     },
     "m_SelectedPriority": 0,
-    "m_KnownProcessesForSerialization": [],
+    "m_KnownProcessesForSerialization": [
+        {
+            "deviceId": "emulator-5554",
+            "name": "ie.setu.mgd.MobileCA",
+            "processId": 3530,
+            "exited": true
+        },
+        {
+            "deviceId": "emulator-5554",
+            "name": "com.google.android.apps.nexuslauncher",
+            "processId": 1101,
+            "exited": false
+        },
+        {
+            "deviceId": "emulator-5554",
+            "name": "ie.setu.mgd.MobileCA",
+            "processId": 3882,
+            "exited": false
+        },
+        {
+            "deviceId": "emulator-5554",
+            "name": "ie.setu.mgd.MobileCA",
+            "processId": 3622,
+            "exited": false
+        },
+        {
+            "deviceId": "emulator-5554",
+            "name": "ie.setu.mgd.MobileCA",
+            "processId": 6067,
+            "exited": false
+        },
+        {
+            "deviceId": "emulator-5554",
+            "name": "ie.setu.mgd.MobileCA",
+            "processId": 2544,
+            "exited": false
+        }
+    ],
     "m_Tags": {
         "m_Entries": [
             {
@@ -63,8 +100,8 @@
     },
     "m_FilterOptions": {
         "m_Filter": "",
-        "m_UseRegularExpressions": false,
-        "m_MatchCase": false
+        "m_UseRegularExpressions": true,
+        "m_MatchCase": true
     },
     "m_SymbolPaths": [],
     "m_CaptureVideoSettings": {
