@@ -1,0 +1,5 @@
+C:/Users/Adam/Downloads/Year 4 PC/Mobile game/MobileCA/.utmp/RelWithDebInfo/526h1n3b/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/Adam/Downloads/Year 4 PC/Mobile game/MobileCA/.utmp/RelWithDebInfo/526h1n3b/x86_64/CMakeFiles/rebuild_cache.dir
+C:/Users/Adam/Downloads/Year 4 PC/Mobile game/MobileCA/.utmp/RelWithDebInfo/526h1n3b/x86_64/GameActivity/CMakeFiles/game.dir
+C:/Users/Adam/Downloads/Year 4 PC/Mobile game/MobileCA/.utmp/RelWithDebInfo/526h1n3b/x86_64/GameActivity/CMakeFiles/edit_cache.dir
+C:/Users/Adam/Downloads/Year 4 PC/Mobile game/MobileCA/.utmp/RelWithDebInfo/526h1n3b/x86_64/GameActivity/CMakeFiles/rebuild_cache.dir

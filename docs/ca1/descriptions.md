@@ -9,4 +9,6 @@ Reclaim your castle and defend against waves of enemies in this mobile prototype
 **Features:**
 - Hold down to rebuild walls/doors and recruit units  
 - Fast-paced, wave-based gameplay    
-- Works on Android (ARM64 devices)
+- Works on Android 15 API 35 devices (ARM64 devices)
+- Unit unlocks are saved across runs
+- Difficulties modifers selectable in main menu
