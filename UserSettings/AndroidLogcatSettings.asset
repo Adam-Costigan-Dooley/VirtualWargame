@@ -3,7 +3,7 @@
     "m_SelectedProcess": {
         "deviceId": "emulator-5554",
         "name": "ie.setu.mgd.MobileCA",
-        "processId": 2544,
+        "processId": 2106,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -42,6 +42,12 @@
             "deviceId": "emulator-5554",
             "name": "ie.setu.mgd.MobileCA",
             "processId": 2544,
+            "exited": false
+        },
+        {
+            "deviceId": "emulator-5554",
+            "name": "ie.setu.mgd.MobileCA",
+            "processId": 2106,
             "exited": false
         }
     ],

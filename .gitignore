@@ -3,6 +3,7 @@
 # Builds
 /releases/*.apk
 /release/*.apk
+/releases/
 /build/
 /Build/
 
