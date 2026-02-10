@@ -4,8 +4,10 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [SerializeField] private int coins = 3;
+    [SerializeField] private int startingCoins = 3;
     [SerializeField] private GameOverUI gameOverUI;
+
+    private int coins;
 
     public int Coins => coins;
 
@@ -13,13 +15,13 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
-            return;
+            Destroy(Instance.gameObject);
         }
+        
         Instance = this;
-        DontDestroyOnLoad(gameObject);
-
-         if (UIManager.Instance != null)
+        coins = startingCoins;
+        
+        if (UIManager.Instance != null)
         {
             UIManager.Instance.UpdateCoinUI(coins);
         }
@@ -28,8 +30,10 @@ public class GameManager : MonoBehaviour
     public void AddCoins(int amount)
     {
         coins += amount;
-        UIManager.Instance.UpdateCoinUI(coins);
-        Debug.Log($"event=coins_updated value={coins}");
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.UpdateCoinUI(coins);
+        }
     }
 
     public bool SpendCoins(int cost)
@@ -37,36 +41,28 @@ public class GameManager : MonoBehaviour
         if (coins >= cost)
         {
             coins -= cost;
-            UIManager.Instance.UpdateCoinUI(coins);
-            Debug.Log($"event=coins_spent value={coins}");
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdateCoinUI(coins);
+            }
             return true;
         }
-        Debug.Log("not enough coins");
         return false;
     }
 
     public void OnPlayerDeath()
-{
-    if (gameOverUI != null)
     {
-        gameOverUI.ShowGameOver("You Died", "Enemies overwhelmed you.");
+        if (gameOverUI != null)
+        {
+            gameOverUI.ShowGameOver("You Died", "Enemies overwhelmed you.");
+        }
     }
-    else
-    {
-        Debug.LogWarning("GameOverUI not assigned in GameManager (OnPlayerDeath).");
-    }
-}
 
-public void OnBaseDestroyed()
-{
-    if (gameOverUI != null)
+    public void OnBaseDestroyed()
     {
-        gameOverUI.ShowGameOver("Keep Fallen", "Your final keep has been destroyed.");
+        if (gameOverUI != null)
+        {
+            gameOverUI.ShowGameOver("Keep Fallen", "Your final keep has been destroyed.");
+        }
     }
-    else
-    {
-        Debug.LogWarning("GameOverUI not assigned in GameManager (OnBaseDestroyed).");
-    }
-}
-
 }

@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: Finalkeep
+  productName: VirtualWargaming
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -142,14 +142,11 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 7
+  bundleVersion: 1
   preloadedAssets:
   - {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   - {fileID: 11400000, guid: b959f43a6dd47ee43b073d98c6436f5a, type: 2}
   - {fileID: -944628639613478452, guid: 234932b85b39aeb45b390dd8727f699d, type: 3}
-  - {fileID: 11400000, guid: 5b60f029aa1274748ad24dd861f3fbd0, type: 2}
-  - {fileID: 11400000, guid: db6efd7f2d6ba0743b64540755fc87cc, type: 2}
-  - {fileID: 4819178499049403264, guid: df0a376a065382341b21a9f442a82abd, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
