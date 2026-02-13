@@ -796,10 +796,10 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: c47093ca-3035-4a09-bb3e-919fdc9b23a0
+  cloudProjectId: a518dfd7-ab7f-4167-bab7-0b1cb5925ba0
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: MobileCA
+  projectName: Final Year Project Virtual Wargame
   organizationId: unity_20101954
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
