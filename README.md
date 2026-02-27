@@ -30,31 +30,31 @@ An automated Unity-based game that:
 ---
 
 ## Current Status
-
-**Sprint 1 (Feb 2-15, 2026):** Frontend Prototype - IN PROGRESS
+**Sprint 2 (Feburary 16-27, 2026):** Completed
+**Sprint 3 (March 2-13, 2026):** Starting
 
 ### Completed Features
 
-#### Authentication System
+#### Sprint 1 (Feb 2-13) - Authentication & UI Foundation
 - **Login Screen** with Unity Gaming Services integration
 - **Username/Password Authentication** - Secure account creation and login
 - **Guest Mode** - Anonymous authentication for quick testing
-- **Validation** - Username (3+ chars), Password (6+ chars)
-- **Error Handling** - Clear user feedback on authentication failures
-- **Scene Transitions** - Smooth flow from Login → Main Menu
-
-#### User Interface
-- **Main Menu** - Play, Settings, Quit buttons
+- **Main Menu** - Scene navigation with Play, Settings, Quit buttons
 - **Responsive Layout** - Scales to different screen sizes
-- **TextMeshPro Integration** - Clean, readable text rendering
 
-### In Progress
-- Tile map rendering system
-- Unit GameObject foundation
-- Camera controls for map navigation
+#### Sprint 2 (Feb 16-27) - Game Map & Combat System
+- **Interactive Tile Map** - 12 clickable territories with adjacency system
+- **Unit Assignment UI** - Scrollable panel for selecting and assigning units
+- **Faction Control** - Visual indicators showing territory ownership (Red/Blue)
+- **Camera Panning** - Click and drag to navigate the map
+- **Turn-Based Combat** - Simultaneous resolution with attacker vs defender logic
+- **Combat Calculations** - Strength-based combat with proper defender inclusion
+- **Resource Generation** - Factions earn resources from controlled territories
+- **Turn Processing** - Complete turn cycle with conflict resolution
 
+
+Completed Features as of 
 ### Upcoming Features
-- **Sprint 2 (Feb 16-Mar 1):** Map rendering, Unit display, Camera controls
-- **Sprint 3 (Mar 2-15):** Action assignment UI, Turn submission system
-- **Sprint 4 (Mar 16-29):** Combat resolution, Movement system
+- **Sprint 3 (Mar 2-15):** Action assignment UI [Partly Implemented in Sprint 2], Turn submission system [Partly Implemented in Sprint 2], "Game/Match Creation"
+- **Sprint 4 (Mar 16-29):** Combat resolution [Partly Implemented in Sprint 2], Movement system, Improve code for map tiles
 - **Sprint 5 (Mar 30-Apr 12):** Multiplayer synchronization, Intelligence system
