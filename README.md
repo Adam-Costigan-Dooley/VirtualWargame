@@ -55,6 +55,6 @@ An automated Unity-based game that:
 
 Completed Features as of 
 ### Upcoming Features
-- **Sprint 3 (Mar 2-15):** Action assignment UI [Partly Implemented in Sprint 2], Turn submission system [Partly Implemented in Sprint 2], "Game/Match Creation"
+- **Sprint 3 (Mar 2-15):** Action assignment UI [Partly Implemented in Sprint 2], Turn submission system [Partly Implemented in Sprint 2], "Game/Match Creation", Burndown chart
 - **Sprint 4 (Mar 16-29):** Combat resolution [Partly Implemented in Sprint 2], Movement system, Improve code for map tiles
 - **Sprint 5 (Mar 30-Apr 12):** Multiplayer synchronization, Intelligence system

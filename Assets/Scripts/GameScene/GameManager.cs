@@ -25,6 +25,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI redResourcesText;
     [SerializeField] private TextMeshProUGUI blueResourcesText;
 
+    [Header("Unit Position Visualization")]
+    [SerializeField] private GameObject unitPositionMarkerPrefab;
+    [SerializeField] private Transform unitMarkerContainer;
+
+    private Dictionary<string, GameObject> currentPositionMarkers = new Dictionary<string, GameObject>();
+    private Dictionary<string, GameObject> assignedPositionMarkers = new Dictionary<string, GameObject>();
+
     // Game state
     private Dictionary<string, Tile> tiles = new Dictionary<string, Tile>();
     private List<Faction> factions = new List<Faction>();
@@ -44,6 +51,7 @@ public class GameManager : MonoBehaviour
         InitializeTiles();
         InitializeUnits();
         CreateTileMarkers();
+        UpdateUnitPositionMarkers(); 
         
         // UI
         nextTurnButton.onClick.AddListener(ProcessNextTurn);
@@ -173,46 +181,42 @@ public class GameManager : MonoBehaviour
     // Create the two factions (Red and Blue teams)
     private void InitializeFactions()
     {
-        Faction redTeam = new Faction("Red Team", new Color(0.8f, 0.2f, 0.2f));
-        Faction blueTeam = new Faction("Blue Team", new Color(0.2f, 0.4f, 0.8f));
+        Faction heroes = new Faction("Heroes", new Color(0.2f, 0.4f, 0.8f)); // Blue
+        Faction villains = new Faction("Villains", new Color(0.8f, 0.2f, 0.2f)); // Red
         
-        factions.Add(redTeam);
-        factions.Add(blueTeam);
+        factions.Add(heroes);
+        factions.Add(villains);
     }
 
     // Initialize all tiles based on the map
     private void InitializeTiles()
     {
-        // Create tiles with positions
-        //To-Do replace this entire thing with a more modular system for future scenario system. Placeholder for unit testing.
-        
         // Row 1 (Top)
-        AddTile("NS", "Northern Suburbs", new Vector2(0.7f, 0.9f), 3);
+        AddTile("NS", "Northern Suburbs", new Vector2(0.55f, 0.82f), 3);
         
-        // Row 2
-        AddTile("NE", "North End", new Vector2(0.3f, 0.75f), 2);
-        AddTile("DK", "The Docks", new Vector2(0.7f, 0.75f), 4);
+        // Row 2  
+        AddTile("NE", "North End", new Vector2(0.35f, 0.68f), 2);
+        AddTile("DK", "The Docks", new Vector2(0.65f, 0.68f), 4);
         
         // Row 3
-        AddTile("MT", "Midtown", new Vector2(0.5f, 0.6f), 5);
+        AddTile("MT", "Midtown", new Vector2(0.5f, 0.55f), 5);
         
         // Row 4
-        AddTile("CH", "Captain's Hill", new Vector2(0.1f, 0.45f), 2);
-        AddTile("DW", "Downtown West", new Vector2(0.5f, 0.45f), 6);
-        AddTile("BW", "Boardwalk", new Vector2(0.8f, 0.45f), 3);
+        AddTile("CH", "Captain's Hill", new Vector2(0.15f, 0.42f), 2);
+        AddTile("DW", "Downtown West", new Vector2(0.45f, 0.42f), 6);
+        AddTile("BW", "Boardwalk", new Vector2(0.72f, 0.42f), 3);
         
         // Row 5
-        AddTile("SS", "Southern Suburbs", new Vector2(0.4f, 0.3f), 2);
-        AddTile("DE", "Downtown East", new Vector2(0.85f, 0.3f), 6);
+        AddTile("SS", "Southern Suburbs", new Vector2(0.42f, 0.28f), 2);
+        AddTile("DE", "Downtown East", new Vector2(0.75f, 0.28f), 6);
         
         // Row 6
-        AddTile("AR", "Airport & Rye", new Vector2(0.6f, 0.15f), 4);
-        AddTile("BS", "Beach Suburbs", new Vector2(0.95f, 0.15f), 3);
+        AddTile("AR", "Airport & Rye", new Vector2(0.55f, 0.15f), 4);
+        AddTile("BS", "Beach Suburbs", new Vector2(0.88f, 0.15f), 3);
         
         // Row 7 (Bottom)
-        AddTile("HR", "Hampton Resort", new Vector2(0.7f, 0.05f), 4);
+        AddTile("HR", "Hampton Resort", new Vector2(0.62f, 0.05f), 4);
 
-        // Set up adjacencies
         SetupAdjacencies();
     }
 
@@ -241,32 +245,62 @@ public class GameManager : MonoBehaviour
     // Create two template units for each faction
     private void InitializeUnits()
     {
-        Faction redTeam = factions[0];
-        Faction blueTeam = factions[1];
+        Faction heroFaction = factions[0]; // Assuming Heroes = index 0
+        Faction villainFaction = factions[1]; // Assuming Villains = index 1
 
-        // Red Team units
-        Unit redUnit1 = new Unit("R1", "Red Infantry A", "Red Team", 5, "DW");
-        Unit redUnit2 = new Unit("R2", "Red Tank", "Red Team", 8, "DW");
-        redTeam.AddUnit(redUnit1);
-        redTeam.AddUnit(redUnit2);
+        // Create all hero units
+        List<Unit> heroUnits = UnitFactory.CreateHeroUnits();
+        foreach (Unit unit in heroUnits)
+        {
+            heroFaction.AddUnit(unit);
+            
+            // Give starting tiles to factions based on unit positions
+            if (!heroFaction.controlledTiles.Contains(unit.currentTile))
+            {
+                Tile tile = tiles[unit.currentTile];
+                tile.SetController("Heroes", heroFaction.factionColor);
+                heroFaction.ClaimTile(unit.currentTile);
+            }
+        }
 
-        // Blue Team units
-        Unit blueUnit1 = new Unit("B1", "Blue Infantry A", "Blue Team", 5, "MT");
-        Unit blueUnit2 = new Unit("B2", "Blue Tank", "Blue Team", 8, "MT");
-        blueTeam.AddUnit(blueUnit1);
-        blueTeam.AddUnit(blueUnit2);
-
-        // Give starting tiles to factions
-        tiles["DW"].SetController("Red Team", redTeam.factionColor);
-        redTeam.ClaimTile("DW");
+        // Create all villain units
+        List<Unit> villainUnits = UnitFactory.CreateVillainUnits();
+        foreach (Unit unit in villainUnits)
+        {
+            villainFaction.AddUnit(unit);
+            
+            // Give starting tiles to factions
+            if (!villainFaction.controlledTiles.Contains(unit.currentTile))
+            {
+                Tile tile = tiles[unit.currentTile];
+                tile.SetController("Villains", villainFaction.factionColor);
+                villainFaction.ClaimTile(unit.currentTile);
+            }
+        }
         
-        tiles["MT"].SetController("Blue Team", blueTeam.factionColor);
-        blueTeam.ClaimTile("MT");
+        Debug.Log($"Initialized {heroUnits.Count} hero units and {villainUnits.Count} villain units");
     }
 
     // Create clickable markers for each tile on the map
     private void CreateTileMarkers()
     {
+
+        Dictionary<string, Vector2> tileOffsets = new Dictionary<string, Vector2>()
+        {
+            {"NS", new Vector2(23, 59)},
+            {"NE", new Vector2(34, 68)},     // You didn't provide NE, so keeping at 0
+            {"DK", new Vector2(-55, 36)},
+            {"MT", new Vector2(-249, 80)},
+            {"CH", new Vector2(69, 134)},
+            {"DW", new Vector2(-161, 74)},
+            {"BW", new Vector2(-309, 138)},
+            {"SS", new Vector2(-89, 62)},
+            {"DE", new Vector2(-240, 157)},
+            {"AR", new Vector2(21, 117)},
+            {"BS", new Vector2(-246, 155)},
+            {"HR", new Vector2(-110, 80)}
+        };
+
         foreach (var kvp in tiles)
         {
             Tile tile = kvp.Value;
@@ -276,7 +310,16 @@ public class GameManager : MonoBehaviour
             RectTransform rt = marker.GetComponent<RectTransform>();
             rt.anchorMin = tile.position;
             rt.anchorMax = tile.position;
-            rt.anchoredPosition = Vector2.zero;
+            
+            // Apply offset to center on actual map tile
+            if (tileOffsets.ContainsKey(tile.tileID))
+            {
+                rt.anchoredPosition = tileOffsets[tile.tileID];
+            }
+            else
+            {
+                rt.anchoredPosition = Vector2.zero;
+            }
             
             Button markerButton = marker.GetComponent<Button>();
             markerButton.onClick.AddListener(() => OnTileClicked(tile));
@@ -300,7 +343,8 @@ public class GameManager : MonoBehaviour
     {
         selectedTile = tile;
         selectedTileText.text = $"Selected: {tile.tileName} ({tile.tileID})";
-        
+
+        UpdateUnitPositionMarkers(); 
         ShowUnitSelectionPanel();
     }
 
@@ -364,6 +408,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        UpdateUnitPositionMarkers(); 
     }
 
     private void AssignUnit(Unit unit, string tileID)
@@ -387,28 +432,19 @@ public class GameManager : MonoBehaviour
         ShowUnitSelectionPanel(); // Refresh UI
     }
 
-    private void ProcessNextTurn()
-    {
-        Debug.Log($"Processing Turn {currentTurn}...");
-        
-        ResolveTileConflicts();
-        UpdateTileControl();
-        GenerateResources();
-        
-        currentTurn++;
-        UpdateUI();
-        
-        Debug.Log($"Turn {currentTurn - 1} complete!");
-    }
 
+    /// <summary>
+    /// Resolve conflicts where multiple factions assigned units to same tile
+    /// UPDATED: Includes casualty rolls (10% destroy, 33% injure losers; 25% injure winners)
+    /// UPDATED: Includes special abilities for elite units
+    /// </summary>
     private void ResolveTileConflicts()
     {
         foreach (var kvp in tiles)
         {
             Tile tile = kvp.Value;
             
-            // Find which factions have units assigned here or already present
-            // ToDo- Update assignment system to showcase where units are defending
+            // Find which factions have units assigned here OR already present
             Dictionary<Faction, int> factionStrengths = new Dictionary<Faction, int>();
             Dictionary<Faction, List<Unit>> factionUnits = new Dictionary<Faction, List<Unit>>();
             
@@ -416,21 +452,45 @@ public class GameManager : MonoBehaviour
             {
                 int totalStrength = 0;
                 List<Unit> unitsInvolved = new List<Unit>();
+                bool isAttacking = false;
                 
+                // Check units ASSIGNED to move here (attackers)
                 foreach (Unit unit in faction.units)
                 {
-                    if (unit.IsAssignedTo(tile.tileID))
+                    if (unit.IsAssignedTo(tile.tileID) && unit.CanDeploy())
                     {
-                        totalStrength += unit.combatStrength;
+                        int strength = unit.combatStrength;
+                        
+                        // Apply special abilities
+                        if (unit.unitID == "V_IRONCLAD" && unit.hasSpecialAbility)
+                        {
+                            // Ironclad: Attackers gain +3 strength
+                            strength += 3;
+                            Debug.Log($"Ironclad's Overwhelming Force: +3 strength");
+                        }
+                        
+                        totalStrength += strength;
                         unitsInvolved.Add(unit);
+                        isAttacking = true;
                     }
                 }
                 
+                // Check units ALREADY at this tile (defenders)
                 foreach (Unit unit in faction.units)
                 {
-                    if (unit.currentTile == tile.tileID && !unit.IsAssigned())
+                    if (unit.currentTile == tile.tileID && !unit.IsAssigned() && unit.status == UnitStatus.Ready)
                     {
-                        totalStrength += unit.combatStrength;
+                        int strength = unit.combatStrength;
+                        
+                        // Apply special abilities
+                        if (unit.unitID == "H_SENTINEL" && unit.hasSpecialAbility && !isAttacking)
+                        {
+                            // Sentinel: Defenders gain +5 strength
+                            strength += 5;
+                            Debug.Log($"Sentinel's Defender ability: +5 strength");
+                        }
+                        
+                        totalStrength += strength;
                         unitsInvolved.Add(unit);
                         Debug.Log($"{unit.unitName} defending {tile.tileName}");
                     }
@@ -443,53 +503,121 @@ public class GameManager : MonoBehaviour
                 }
             }
             
+            // If multiple factions are present, resolve combat
             if (factionStrengths.Count > 1)
             {
-                Debug.Log($"CONFLICT at {tile.tileName}!");
+                Debug.Log($"⚔️ CONFLICT at {tile.tileName}!");
                 
+                // Show all faction strengths
                 foreach (var kvp2 in factionStrengths)
                 {
-                    Debug.Log($"  {kvp2.Key.factionName}: {kvp2.Value} strength");
+                    Debug.Log($"  {kvp2.Key.factionName}: {kvp2.Value} strength ({kvp2.Value / factionUnits[kvp2.Key].Count} avg)");
                 }
                 
-                // Find winner (highest strength for now, tiered combat outcomes todo)
-                var winner = factionStrengths.OrderByDescending(x => x.Value).First();
-                Debug.Log($"{winner.Key.factionName} wins with strength {winner.Value}!");
+                // Find winner (highest strength)
+                var winnerEntry = factionStrengths.OrderByDescending(x => x.Value).First();
+                Faction winningFaction = winnerEntry.Key;
+                Debug.Log($"🏆 {winningFaction.factionName} wins with {winnerEntry.Value} strength!");
                 
-                // Process results for each faction
+                // Process casualties for each faction
                 foreach (var factionKvp in factionUnits)
                 {
                     Faction faction = factionKvp.Key;
                     List<Unit> units = factionKvp.Value;
+                    bool isWinner = (faction == winningFaction);
                     
                     foreach (Unit unit in units)
                     {
-                        if (faction == winner.Key)
+                        if (isWinner)
                         {
-                            // Winner's units stay/move to tile
+                            // WINNER'S UNITS
+                            
+                            // Move to tile if attacking
                             if (unit.IsAssigned())
                             {
-                                unit.ExecuteMove(); // Move to tile
-                                Debug.Log($"{unit.unitName} successfully captured {tile.tileName}");
+                                unit.ExecuteMove();
+                                Debug.Log($"✓ {unit.unitName} successfully captured {tile.tileName}");
                             }
                             else
                             {
-                                // Already here, just stay
-                                Debug.Log($"{unit.unitName} successfully defended {tile.tileName}");
+                                Debug.Log($"✓ {unit.unitName} successfully defended {tile.tileName}");
+                            }
+                            
+                            // 25% chance of injury for winners
+                            int roll = Random.Range(1, 101); // 1-100
+                            
+                            if (roll <= 25)
+                            {
+                                unit.SetInjured();
+                                Debug.Log($"  🤕 {unit.unitName} was injured in the battle");
                             }
                         }
                         else
                         {
-                            // Loser's units are defeated
-                            if (unit.IsAssigned())
+                            // LOSER'S UNITS
+                            
+                            // Check for Velocity's special ability (never injured when retreating)
+                            bool canAvoidInjury = (unit.unitID == "H_VELOCITY" && unit.hasSpecialAbility);
+                            
+                            // Check for Phantom's special ability (50% avoid injury)
+                            bool hasPhantomAbility = (unit.unitID == "V_PHANTOM" && unit.hasSpecialAbility);
+                            
+                            int roll = Random.Range(1, 101); // 1-100
+                            
+                            // 10% chance of destruction
+                            if (roll <= 10)
                             {
-                                unit.Unassign(); // Cancel movement
-                                Debug.Log($"{unit.unitName} defeated at {tile.tileName} (attack failed)");
+                                if (canAvoidInjury)
+                                {
+                                    Debug.Log($"  ⚡ {unit.unitName} uses Evasion - avoided destruction!");
+                                    unit.Unassign();
+                                }
+                                else if (hasPhantomAbility && Random.Range(0, 2) == 0) // 50% chance
+                                {
+                                    Debug.Log($"  👻 {unit.unitName} uses Shadow Step - avoided destruction!");
+                                    unit.Unassign();
+                                }
+                                else
+                                {
+                                    unit.SetDestroyed();
+                                    Debug.Log($"  💀 {unit.unitName} was destroyed!");
+                                }
                             }
+                            // 33% chance of injury (cumulative: 10 + 33 = 43)
+                            else if (roll <= 43)
+                            {
+                                if (canAvoidInjury)
+                                {
+                                    Debug.Log($"  ⚡ {unit.unitName} uses Evasion - avoided injury!");
+                                    unit.Unassign();
+                                }
+                                else if (hasPhantomAbility && Random.Range(0, 2) == 0) // 50% chance
+                                {
+                                    Debug.Log($"  👻 {unit.unitName} uses Shadow Step - avoided injury!");
+                                    unit.Unassign();
+                                }
+                                else
+                                {
+                                    unit.SetInjured();
+                                    Debug.Log($"  🤕 {unit.unitName} was injured!");
+                                }
+                                
+                                // Cancel movement if assigned
+                                if (unit.IsAssigned())
+                                {
+                                    unit.Unassign();
+                                }
+                            }
+                            // 57% chance - retreat unharmed
                             else
                             {
-                                Debug.Log($"{unit.unitName} defeated at {tile.tileName} (defense failed)");
-                                // TODO: Implement unit destruction/removal/Injuries
+                                Debug.Log($"  ↩️ {unit.unitName} retreated safely");
+                                
+                                // Cancel movement if assigned
+                                if (unit.IsAssigned())
+                                {
+                                    unit.Unassign();
+                                }
                             }
                         }
                     }
@@ -497,7 +625,7 @@ public class GameManager : MonoBehaviour
             }
             else if (factionStrengths.Count == 1)
             {
-                // No conflict
+                // No conflict - single faction controls
                 var faction = factionStrengths.First().Key;
                 List<Unit> units = factionUnits[faction];
                 
@@ -506,56 +634,75 @@ public class GameManager : MonoBehaviour
                     if (unit.IsAssigned())
                     {
                         unit.ExecuteMove();
-                        Debug.Log($"{unit.unitName} moved to {tile.tileName} (no opposition)");
+                        Debug.Log($"➡️ {unit.unitName} moved to {tile.tileName} (no opposition)");
                     }
+                    // Units already here just stay (no message needed)
                 }
             }
         }
     }
 
-
+    /// <summary>
+    /// Update tile control based on which units are present
+    /// UPDATED: Scouts cannot capture tiles alone
+    /// </summary>
     private void UpdateTileControl()
     {
         foreach (var kvp in tiles)
         {
             Tile tile = kvp.Value;
             
-            Faction controllingFaction = null;
+            // Find which faction has non-scout units at this tile
+            Faction newController = null;
             
             foreach (Faction faction in factions)
             {
+                bool hasNonScoutUnit = false;
+                
                 foreach (Unit unit in faction.units)
                 {
-                    if (unit.currentTile == tile.tileID)
+                    // Check if unit is at this tile, alive, and not a scout
+                    if (unit.currentTile == tile.tileID && 
+                        unit.status != UnitStatus.Destroyed && 
+                        unit.unitType != UnitType.Scout)
                     {
-                        controllingFaction = faction;
+                        hasNonScoutUnit = true;
                         break;
                     }
                 }
-                if (controllingFaction != null) break;
-            }
-            
-            if (controllingFaction != null)
-            {
-                if (tile.controllingFaction != controllingFaction.factionName)
+                
+                if (hasNonScoutUnit)
                 {
-                    Debug.Log($"{controllingFaction.factionName} captured {tile.tileName}!");
-                    
-                    if (tile.controllingFaction != null)
-                    {
-                        Faction oldFaction = factions.Find(f => f.factionName == tile.controllingFaction);
-                        oldFaction?.LoseTile(tile.tileID);
-                    }
-                    
-                    tile.SetController(controllingFaction.factionName, controllingFaction.factionColor);
-                    controllingFaction.ClaimTile(tile.tileID);
+                    newController = faction;
+                    break; // Found a controlling faction
                 }
             }
+            
+            // Only update if there's a NEW controller (someone captured it)
+            if (newController != null && tile.controllingFaction != newController.factionName)
+            {
+                Debug.Log($"Territory Change: {newController.factionName} captured {tile.tileName}!");
+                
+                // Remove from old faction if it was controlled
+                if (tile.controllingFaction != null)
+                {
+                    Faction oldFaction = factions.Find(f => f.factionName == tile.controllingFaction);
+                    oldFaction?.LoseTile(tile.tileID);
+                }
+                
+                // Add to new faction
+                tile.SetController(newController.factionName, newController.factionColor);
+                newController.ClaimTile(tile.tileID);
+            }
+            // If no one is there, tile keeps its current control
+            // No change needed - it stays as it was
         }
         
         UpdateTileVisuals();
     }
-
+    /// <summary>
+    /// Update visual appearance of tile markers based on faction control
+    /// </summary>
     private void UpdateTileVisuals()
     {
         foreach (Transform child in mapImage.transform)
@@ -579,6 +726,37 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Process turn for all units (recover from injuries, etc.)
+    /// UPDATED: Call ProcessTurn on each unit
+    /// </summary>
+    private void ProcessNextTurn()
+    {
+        Debug.Log($"⏰ Processing Turn {currentTurn}...");
+        
+        // Process unit status (injuries, etc.)
+        foreach (Faction faction in factions)
+        {
+            foreach (Unit unit in faction.units)
+            {
+                unit.ProcessTurn();
+            }
+            
+            // Remove destroyed units from faction
+            faction.units.RemoveAll(u => u.status == UnitStatus.Destroyed);
+        }
+        
+        ResolveTileConflicts();
+        UpdateTileControl();
+        GenerateResources();
+        
+        currentTurn++;
+        UpdateUI();
+        UpdateUnitPositionMarkers(); 
+        
+        Debug.Log($"✅ Turn {currentTurn - 1} complete!");
     }
 
     private void GenerateResources()
@@ -615,4 +793,192 @@ public class GameManager : MonoBehaviour
             closeUnitPanelButton.onClick.RemoveListener(CloseUnitPanel);
         }
     }
+
+    /// <summary>
+    /// Update all unit position markers on the map
+    /// Called after any unit assignment change or turn resolution
+    /// </summary>
+    private void UpdateUnitPositionMarkers()
+    {
+        // Clear existing markers
+        ClearAllUnitMarkers();
+        
+        // Create markers for all units in both factions
+        foreach (Faction faction in factions)
+        {
+            foreach (Unit unit in faction.units)
+            {
+                // Skip destroyed units
+                if (unit.status == UnitStatus.Destroyed)
+                    continue;
+                
+                // Create marker at current position
+                if (!string.IsNullOrEmpty(unit.currentTile) && tiles.ContainsKey(unit.currentTile))
+                {
+                    CreateCurrentPositionMarker(unit, faction);
+                }
+                
+                // Create marker at assigned position (if different from current)
+                if (unit.IsAssigned() && tiles.ContainsKey(unit.assignedTile) && unit.assignedTile != unit.currentTile)
+                {
+                    CreateAssignedPositionMarker(unit, faction);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Create a marker showing unit's current position
+    /// </summary>
+    private void CreateCurrentPositionMarker(Unit unit, Faction faction)
+    {
+        // Find the tile marker to copy its exact positioning setup
+        GameObject tileMarker = FindTileMarkerByID(unit.currentTile);
+        if (tileMarker == null) return;
+        
+        RectTransform tileRT = tileMarker.GetComponent<RectTransform>();
+        
+        GameObject marker = Instantiate(unitPositionMarkerPrefab, tileMarker.transform);
+        RectTransform rt = marker.GetComponent<RectTransform>();
+        
+        // Set to center of parent (tile marker) with no stretching
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        
+        // Now offset is purely relative to tile marker center
+        Vector2 unitOffset = CalculateUnitOffset(unit.currentTile, unit.unitID);
+        rt.anchoredPosition = unitOffset;
+        
+        rt.sizeDelta = new Vector2(15, 15);
+        
+        Image img = marker.GetComponent<Image>();
+        if (img != null)
+        {
+            img.color = faction.factionColor;
+        }
+        
+        currentPositionMarkers[unit.unitID] = marker;
+    }
+
+
+    /// <summary>
+    /// Create a marker showing where unit is assigned to move
+    /// </summary>
+    private void CreateAssignedPositionMarker(Unit unit, Faction faction)
+    {
+        // Find the tile marker to copy its exact positioning setup
+        GameObject tileMarker = FindTileMarkerByID(unit.assignedTile);
+        if (tileMarker == null) return;
+        
+        RectTransform tileRT = tileMarker.GetComponent<RectTransform>();
+        
+        GameObject marker = Instantiate(unitPositionMarkerPrefab, tileMarker.transform);
+        RectTransform rt = marker.GetComponent<RectTransform>();
+        
+        // Set to center of parent (tile marker) with no stretching
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        
+        // Now offset is purely relative to tile marker center
+        Vector2 unitOffset = CalculateUnitOffset(unit.assignedTile, unit.unitID);
+        rt.anchoredPosition = unitOffset;
+        
+        rt.sizeDelta = new Vector2(15, 15);
+        
+        Image img = marker.GetComponent<Image>();
+        if (img != null)
+        {
+            Color transparentColor = faction.factionColor;
+            transparentColor.a = 0.4f;
+            img.color = transparentColor;
+        }
+        
+        assignedPositionMarkers[unit.unitID] = marker;
+    }
+    
+    /// <summary>
+    /// Find the tile marker GameObject by tile ID
+    /// </summary>
+    private GameObject FindTileMarkerByID(string tileID)
+    {
+        foreach (Transform child in mapImage.transform)
+        {
+            TextMeshProUGUI nameText = child.GetComponentInChildren<TextMeshProUGUI>();
+            if (nameText != null && nameText.text == tileID)
+            {
+                return child.gameObject;
+            }
+        }
+        return null;
+    }
+    /// <summary>
+    /// Calculate offset for unit marker so multiple units at same tile don't overlap
+    /// </summary>
+    private Vector2 CalculateUnitOffset(string tileID, string unitID)
+    {
+        // Count how many units we've ALREADY POSITIONED at this tile
+        // (not checking the dictionaries since they're empty during initial creation)
+        int unitCount = 0;
+        
+        foreach (Faction faction in factions)
+        {
+            foreach (Unit unit in faction.units)
+            {
+                if (unit.status == UnitStatus.Destroyed)
+                    continue;
+                
+                // Don't count the current unit we're positioning
+                if (unit.unitID == unitID)
+                    continue;
+                
+                // Count units at current position
+                if (unit.currentTile == tileID)
+                {
+                    unitCount++;
+                }
+                
+                // Count units assigned to this position
+                if (unit.assignedTile == tileID)
+                {
+                    unitCount++;
+                }
+            }
+        }
+        
+        // Arrange in a circle around the tile marker
+        float radius = 30f;
+        float angle = (unitCount * 45f) * Mathf.Deg2Rad; // 45 degrees apart
+        
+        Vector2 offset = new Vector2(
+            Mathf.Cos(angle) * radius,
+            Mathf.Sin(angle) * radius
+        );
+        
+        return offset;
+    }
+    /// <summary>
+    /// Clear all unit position markers from the map
+    /// </summary>
+    private void ClearAllUnitMarkers()
+    {
+        // Clear current position markers
+        foreach (var marker in currentPositionMarkers.Values)
+        {
+            if (marker != null)
+                Destroy(marker);
+        }
+        currentPositionMarkers.Clear();
+        
+        // Clear assigned position markers
+        foreach (var marker in assignedPositionMarkers.Values)
+        {
+            if (marker != null)
+                Destroy(marker);
+        }
+        assignedPositionMarkers.Clear();
+    }
+
 }
+
